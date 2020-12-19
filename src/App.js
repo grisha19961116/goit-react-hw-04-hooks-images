@@ -1,6 +1,4 @@
-import { Component } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { useState } from 'react';
 import s from './App.module.css';
 import api from './API/api.js';
 
@@ -8,36 +6,28 @@ import Searchbar from './components/Searchbar/Searchbar.jsx';
 import ImageGallery from './components/ImageGallery/ImageGallery.jsx';
 import Button from './components/Button/Button.jsx';
 import Load from './components/Loader/Loader.jsx';
-import Modal from './components/Modal//Modal.jsx';
+import Modal from './components/Modal/Modal.jsx';
 
-export default class App extends Component {
-  state = {
-    valueSubmit: '',
-    dataFetch: [],
-    page: 1,
-    flag: false,
-    fullHd: '',
-  };
+function App() {
+  const [valueSubmit, setValueSubmit] = useState('');
+  const [dataFetch, setDataFetch] = useState([]);
+  const [page, setPage] = useState(1);
+  const [flagLoad, setFlagLoad] = useState(false);
+  const [fullHd, setFullHd] = useState('');
 
-  handleSubmit = even => {
+  const handleSubmit = even => {
     even.preventDefault();
     const searchWord = even.target.lastChild.value;
-    const { page } = this.state;
 
     api.getFullRequest(searchWord, page).then(dataRequest => {
-      this.setState(({ valueSubmit, dataFetch }) => ({
-        valueSubmit: searchWord,
-        dataFetch: dataRequest.hits,
-      }));
+      setDataFetch(dataRequest.hits);
+      setValueSubmit(searchWord);
     });
   };
 
-  handleLoadButton = () => {
-    const { valueSubmit, page } = this.state;
+  const handleLoadButton = () => {
     const changePage = page + 1;
-    this.setState(() => ({
-      flag: true,
-    }));
+    setFlagLoad(true);
 
     const scrollList = () => {
       window.scrollTo({
@@ -46,64 +36,47 @@ export default class App extends Component {
       });
     };
 
-    api.getFullRequest(valueSubmit, changePage + 1).then(dataRequest => {
-      this.setState(
-        ({ dataFetch }) => ({
-          dataFetch: [...dataFetch, ...dataRequest.hits],
-          page: changePage,
-          flag: false,
-        }),
-        () => scrollList(),
-      );
+    api.getFullRequest(valueSubmit, changePage).then(dataRequest => {
+      setDataFetch([...dataFetch, ...dataRequest.hits]);
+      setPage(changePage);
+      setFlagLoad(false);
+      scrollList();
     });
   };
 
-  handleListenerForList = even => {
+  const handleListenerForList = even => {
     if (even.target.tagName === 'IMG') {
-      this.setState(() => ({
-        fullHd: even.target.alt,
-      }));
+      setFullHd(even.target.alt);
     }
   };
 
-  handleListenerForCloseModalClick = even => {
+  const handleListenerForCloseModalClick = even => {
     if (even.target.tagName !== 'IMG') {
-      this.setState(() => ({
-        fullHd: '',
-      }));
+      setFullHd('');
     }
-    console.log(`handleListenerForCloseModalClick`);
   };
 
-  handleListenerForCloseModalKeydown = even => {
+  const handleListenerForCloseModalKeydown = even => {
     if (even.code === 'Escape') {
-      this.setState(() => ({
-        fullHd: '',
-      }));
+      setFullHd('');
     }
   };
 
-  render() {
-    const { dataFetch, flag, fullHd } = this.state;
-
-    return (
-      <div>
-        <Searchbar onSubmit={this.handleSubmit} onChange={this.handleInput} />
-        {fullHd !== '' && (
-          <Modal
-            src={fullHd}
-            onClickClose={this.handleListenerForCloseModalClick}
-            keyClose={this.handleListenerForCloseModalKeydown}
-          />
-        )}
-        <ImageGallery
-          dataFetch={dataFetch}
-          onClick={this.handleListenerForList}
+  return (
+    <div>
+      <Searchbar onSubmit={even => handleSubmit(even)} />
+      {fullHd !== '' && (
+        <Modal
+          src={fullHd}
+          onClickClose={handleListenerForCloseModalClick}
+          keyClose={handleListenerForCloseModalKeydown}
         />
-        {dataFetch.length > 0 && <Button onClick={this.handleLoadButton} />}
-        {flag && <Load />}
-        {/* <ToastContainer></ToastContainer> */}
-      </div>
-    );
-  }
+      )}
+      <ImageGallery dataFetch={dataFetch} onClick={handleListenerForList} />
+      {dataFetch.length > 0 && <Button onClick={handleLoadButton} />}
+      {flagLoad && <Load />}
+    </div>
+  );
 }
+
+export default App;
