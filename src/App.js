@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import s from './App.module.css';
 import api from './API/api.js';
 
@@ -18,8 +19,8 @@ function App() {
   const handleSubmit = even => {
     even.preventDefault();
     const searchWord = even.target.lastChild.value;
-
-    api.getFullRequest(searchWord, page).then(dataRequest => {
+    const baseUrl = `https://pixabay.com/api/?q=${searchWord}&page=${page}&key=18650753-c8867d24a687d3baeda70b1dc&image_type=photo&orientation=horizontal&per_page=12`;
+    api.getFullRequest(baseUrl).then(dataRequest => {
       setDataFetch(dataRequest.hits);
       setValueSubmit(searchWord);
     });
@@ -35,8 +36,9 @@ function App() {
         behavior: 'smooth',
       });
     };
+    const baseUrl = `https://pixabay.com/api/?q=${valueSubmit}&page=${changePage}&key=18650753-c8867d24a687d3baeda70b1dc&image_type=photo&orientation=horizontal&per_page=12`;
 
-    api.getFullRequest(valueSubmit, changePage).then(dataRequest => {
+    api.getFullRequest(baseUrl).then(dataRequest => {
       setDataFetch([...dataFetch, ...dataRequest.hits]);
       setPage(changePage);
       setFlagLoad(false);
@@ -56,22 +58,26 @@ function App() {
     }
   };
 
-  const handleListenerForCloseModalKeydown = even => {
-    if (even.code === 'Escape') {
+  const handleListenerForCloseModalKeydown = e => {
+    if (e.code === 'Escape') {
       setFullHd('');
     }
   };
 
+  const modalRef = document.querySelector('#root__modal');
+
   return (
     <div>
       <Searchbar onSubmit={even => handleSubmit(even)} />
-      {fullHd !== '' && (
-        <Modal
-          src={fullHd}
-          onClickClose={handleListenerForCloseModalClick}
-          keyClose={handleListenerForCloseModalKeydown}
-        />
-      )}
+      {fullHd !== '' &&
+        createPortal(
+          <Modal
+            src={fullHd}
+            onClickClose={handleListenerForCloseModalClick}
+            onKeyDown={handleListenerForCloseModalKeydown}
+          />,
+          modalRef,
+        )}
       <ImageGallery dataFetch={dataFetch} onClick={handleListenerForList} />
       {dataFetch.length > 0 && <Button onClick={handleLoadButton} />}
       {flagLoad && <Load />}

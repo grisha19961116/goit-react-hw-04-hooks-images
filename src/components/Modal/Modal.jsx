@@ -1,11 +1,17 @@
 import s from './Modal.module.css';
+import { useEffect } from 'react';
 
-const Modal = ({ src, onClickClose, keyClose }) => {
+const Modal = ({ src, onClickClose, onKeyDown}) => {
+  
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  });
   return (
     <div
       className={s.Overlay}
-      tabIndex={0}
-      onKeyDown={even => keyClose(even)}
       onClick={even => onClickClose(even)}
     >
       <div className={s.Modal}>
