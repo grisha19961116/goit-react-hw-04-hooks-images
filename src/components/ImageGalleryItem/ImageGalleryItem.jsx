@@ -1,11 +1,11 @@
 import s from './ImageGalleryItem.module.css';
 
-const ImageGalleryItem = ({ id, webformatURL, largeImageURL }) => {
+const ImageGalleryItem = ({ url, urlHd }) => {
   return (
-    <li key={id} className={s.ImageGalleryItem}>
+    <li  className={s.ImageGalleryItem}>
       <img
-        src={webformatURL}
-        alt={largeImageURL}
+        src={url}
+        alt={urlHd}
         className={s.ImageGalleryItem__image}
       />
     </li>

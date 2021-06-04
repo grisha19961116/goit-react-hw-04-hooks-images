@@ -1,18 +1,18 @@
 import s from './Modal.module.css';
 import { useEffect } from 'react';
 
-const Modal = ({ src, onClickClose, onKeyDown}) => {
+const Modal = ({ src, closeModalClick, closeModalEsc}) => {
   
   useEffect(() => {
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', closeModalEsc);
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keydown', closeModalEsc);
     };
   });
   return (
     <div
       className={s.Overlay}
-      onClick={even => onClickClose(even)}
+      onClick={e => closeModalClick(e)}
     >
       <div className={s.Modal}>
         <img src={src} alt="open full hd img" />

@@ -1,0 +1,19 @@
+.loader {
+    position: absolute;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .loader__position {
+    bottom: 220px;
+  }
+  
+  .loader__domLoad__position {
+    bottom: 47%;
+  }
+  

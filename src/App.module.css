@@ -26,12 +26,14 @@ img {
   height: auto;
 }
 
-/*
- * Стили компонента App
- */
 .App {
   display: grid;
   grid-template-columns: 1fr;
   grid-gap: 16px;
   padding-bottom: 24px;
+}
+
+.wrapper__gallery {
+  position: relative;
+  padding-bottom: 360px;
 }
